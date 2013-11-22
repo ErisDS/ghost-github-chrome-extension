@@ -1,0 +1,8 @@
+{
+  "name": "Ghost GitHub Tools",
+  "description": "Does stuff on the TryGhost/Ghost GitHub repo to make it easier to manage.",
+  "version": "0.1",
+  "content_scripts": [{"matches": ["https://github.com/TryGhost/Ghost/*"],"js": ["background.js"]}],
+  "permissions": ["tabs", "https://github.com/TryGhost/Ghost/", "storage"],
+  "manifest_version": 2
+}

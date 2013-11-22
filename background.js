@@ -1,7 +1,7 @@
 (function () {
 
     var optionKey = 'option',
-        buttonGroup, transButton, docsButton, wipButton, data = {};
+        buttonGroup, allButton, transButton, docsButton, wipButton, data = {};
 
     function loadSavedState(callback) {
         chrome.storage.sync.get(optionKey, function(options) {
@@ -11,12 +11,10 @@
 
     function isPullRequestPage() {
         return /pulls/.test(window.location.pathname);
-
     }
 
     function isTranslation(item) {
         return (/^\[Translations:/.test(item.textContent));
-
     }
 
     function isDocs(item) {
@@ -25,6 +23,26 @@
 
     function isWIP(item) {
         return (/^\[WIP/.test(item.textContent));
+    }
+
+    function show(item) {
+        item.style.display = "block";
+    }
+
+    function hide(item) {
+        item.style.display = "none";
+    }
+
+
+    /**
+     * Check All button
+     */
+    function toggleAll() {
+        if (!checkButton(allButton)) {
+            data[optionKey] = "all";
+            updateButton("all");
+            chrome.storage.sync.set(data);
+        }
     }
 
     /**
@@ -76,7 +94,7 @@
         return false;
     }
 
-    function drawButton () {
+    function drawButtons () {
         var menu = document.querySelector('.issues-list-options');
 
         /**
@@ -87,11 +105,19 @@
         buttonGroup.classList.add("button-group");
 
         /**
+         * Create All button
+         * @type {HTMLElement}
+         */
+        allButton = document.createElement('a');
+        allButton.appendChild(document.createTextNode('All'));
+        allButton.classList.add("minibutton");
+
+        /**
          * Create Translations button
          * @type {HTMLElement}
          */
         transButton = document.createElement('a');
-        transButton.appendChild(document.createTextNode('Translations'));
+        transButton.appendChild(document.createTextNode('Trans'));
         transButton.classList.add("minibutton");
 
         /**
@@ -113,6 +139,7 @@
         /**
          * Shh.. listening for clicks.
          */
+        allButton.addEventListener("click", toggleAll, false);
         transButton.addEventListener("click", toggleTranslations, false);
         docsButton.addEventListener("click", toggleDocs, false);
         wipButton.addEventListener("click", toggleWIP, false);
@@ -120,6 +147,7 @@
         /**
          * Add button group to the UI
          */
+        buttonGroup.appendChild(allButton);
         buttonGroup.appendChild(transButton);
         buttonGroup.appendChild(docsButton);
         buttonGroup.appendChild(wipButton);
@@ -140,6 +168,9 @@
          * Toggle the button clicked.
          */
         switch (state) {
+            case "all":
+                allButton.classList.toggle("selected");
+                break;
             case "trans":
                 transButton.classList.toggle("selected");
                 break;
@@ -160,35 +191,38 @@
 
         for (key in list) {
             if (list.hasOwnProperty(key) && key !== 'length') {
-
+                var itemParent = list[key].parentElement.parentElement;
                 if (!state) {
                     // Display everything
                     if (isTranslation(list[key]) || isDocs(list[key]) || isWIP(list[key])) {
-                        list[key].parentElement.parentElement.style.display = "none";
+                        hide(itemParent);
                     } else {
-                        list[key].parentElement.parentElement.style.display = "block";
+                        show(itemParent);
                     }
                 } else {
                     switch (state) {
+                        case "all": // Display all
+                            show(itemParent);
+                            break;
                         case "trans": // Display translations
                             if (!isTranslation(list[key])) {
-                                list[key].parentElement.parentElement.style.display = "none";
+                                hide(itemParent);
                             } else {
-                                list[key].parentElement.parentElement.style.display = "block";
+                                show(itemParent);
                             }
                             break;
                         case "docs": // Display documentation
                             if (!isDocs(list[key])) {
-                                list[key].parentElement.parentElement.style.display = "none";
+                                hide(itemParent);
                             } else {
-                                list[key].parentElement.parentElement.style.display = "block";
+                                show(itemParent);
                             }
                             break;
                         case "wip": // Display WIP
                             if (!isWIP(list[key])) {
-                                list[key].parentElement.parentElement.style.display = "none";
+                                hide(itemParent);
                             } else {
-                                list[key].parentElement.parentElement.style.display = "block";
+                                show(itemParent);
                             }
                             break;
                         default:
@@ -207,7 +241,7 @@
 
     function init() {
         if (isPullRequestPage()) {
-            drawButton();
+            drawButtons();
 
             chrome.storage.onChanged.addListener(function (changes) {
                 updateUi(changes[optionKey].newValue);

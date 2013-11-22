@@ -163,7 +163,11 @@
 
                 if (!state) {
                     // Display everything
-                    list[key].parentElement.parentElement.style.display = "block";
+                    if (isTranslation(list[key]) || isDocs(list[key]) || isWIP(list[key])) {
+                        list[key].parentElement.parentElement.style.display = "none";
+                    } else {
+                        list[key].parentElement.parentElement.style.display = "block";
+                    }
                 } else {
                     switch (state) {
                         case "trans": // Display translations

@@ -12,8 +12,13 @@ To install, clone the repo and then follow the instructions for installing unpac
 
 http://developer.chrome.com/extensions/getstarted.html#unpacked
 
-![Translation button](http://i.imgur.com/Cp5g5JQ.png)
+![Translation button](http://i.imgur.com/O7SFLgC.png)
 
 Once installed, when visiting https://github.com/TryGhost/Ghost/pulls you will see a new "Translations" button in 
 the filter menu. Pressing it will toggle between Translations and other PRs. The button will remember your previous 
 choice when you revisit the page.
+
+
+#### See it in action
+
+http://cl.ly/image/1m3B1W040U2n

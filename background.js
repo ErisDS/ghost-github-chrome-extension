@@ -187,6 +187,7 @@
 
     function updateList(state) {
         var list = document.querySelectorAll('.pulls-list-group .list-group-item-name a'),
+            count = list.length,
             key;
 
         for (key in list) {
@@ -196,6 +197,7 @@
                     // Display everything
                     if (isTranslation(list[key]) || isDocs(list[key]) || isWIP(list[key])) {
                         hide(itemParent);
+                        count -=1;
                     } else {
                         show(itemParent);
                     }
@@ -207,6 +209,7 @@
                         case "trans": // Display translations
                             if (!isTranslation(list[key])) {
                                 hide(itemParent);
+                                count -=1;
                             } else {
                                 show(itemParent);
                             }
@@ -214,6 +217,7 @@
                         case "docs": // Display documentation
                             if (!isDocs(list[key])) {
                                 hide(itemParent);
+                                count -=1;
                             } else {
                                 show(itemParent);
                             }
@@ -221,6 +225,7 @@
                         case "wip": // Display WIP
                             if (!isWIP(list[key])) {
                                 hide(itemParent);
+                                count -=1;
                             } else {
                                 show(itemParent);
                             }
@@ -229,9 +234,10 @@
                             break;
                     }
                 }
-
             }
         }
+
+        document.querySelector('.filter-list .count').innerHTML = count;
     }
 
     function updateUi(state) {

@@ -97,6 +97,8 @@
     function drawButtons () {
         var menu = document.querySelector('.issues-list-options');
 
+        // Make more room
+        document.querySelector('.issues-list-options .add-button').innerHTML = 'New';
         /**
          * Create button group
          * @type {HTMLElement}
@@ -155,7 +157,6 @@
     }
 
     function updateButton(state) {
-
         /**
          * Un-select previously selected buttons
          * @type {Node}
@@ -245,14 +246,30 @@
         updateList(state);
     }
 
+    function initUi() {
+        drawButtons();
+        loadSavedState(updateUi);
+    }
+
+    function initStorage() {
+        chrome.storage.onChanged.addListener(function (changes) {
+            updateUi(changes[optionKey].newValue);
+        });
+    }
+
     function init() {
         if (isPullRequestPage()) {
-            drawButtons();
+            initStorage();
+            initUi();
 
-            chrome.storage.onChanged.addListener(function (changes) {
-                updateUi(changes[optionKey].newValue);
-            });
-            loadSavedState(updateUi);
+            var container = document.querySelector('#js-repo-pjax-container');
+            function listener (e) {
+                if (e.relatedNode.className === "repository-content context-loader-container") {
+                    initUi();
+                }
+            }
+
+            container.addEventListener("DOMNodeInserted", listener);
         }
     }
 
